@@ -1,51 +1,46 @@
-import React , {Component} from "react";
+import React , {useEffect, useState} from "react";
 
-export default class AddToDo extends Component{
+export default function AddToDo(props){
 
-    state = {
+    const initState = {
         id:"",
         title:"",
         completed: "false"
     }
+    const [state,setState] = useState(initState);
 
-    handleChange = (event) =>{
-        this.setState({
+    const handleChange = (event) =>{
+        setState({
+            ...state,
             [event.target.id] : event.target.value
         })
     }
-    handleSubmit = (event) =>{
+    const handleSubmit = (event) =>{
         event.preventDefault();
-        console.log("submit");
-        this.props.addToDo(this.state);
-        this.setState({
-            id:"",
-            title:"",
-            completed: "false"
-        })
+        props.addToDo(state);
+        setState(initState);
     }
-    render(){
-        return(
-            <div>
-                <h1>Add To Do</h1>
-                <form onSubmit={this.handleSubmit}>
-                    <div className="form-group">
-                        <input id="id" className="form-control" placeholder="Enter Id" value={this.state.id} onChange={this.handleChange}/>
-                    </div>
-                    <div className="form-group">
-                        <input id="title" className="form-control" placeholder="Enter Title" value={this.state.title} onChange={this.handleChange}/>
-                    </div>
-                    <div className="form-group">
-                        <select id="completed" className="form-control" value={this.state.completed} onChange={this.handleChange}>
-                            <option name="pending" value="false">Penging</option>
-                            <option name="done" value="true">Done</option>
-                        </select>
-                    </div>
-                    <div className="form-group">
-                        <button type="submit" className="btn btn-primary form-control">AddToDo</button>
-                    </div>
-
-                </form>
-            </div>
-        )
-    }
+    
+    return(
+        <div>
+            <h1>Add To Do</h1>
+            <form onSubmit={handleSubmit}>
+                <div className="form-group">
+                    <input id="id" className="form-control" placeholder="Enter Id" value={state.id} onChange={handleChange}/>
+                </div>
+                <div className="form-group">
+                    <input id="title" className="form-control" placeholder="Enter Title" value={state.title} onChange={handleChange}/>
+                </div>
+                <div className="form-group">
+                    <select id="completed" className="form-control" value={state.completed} onChange={handleChange}>
+                        <option name="pending" value="false">Penging</option>
+                        <option name="done" value="true">Done</option>
+                    </select>
+                </div>
+                <div className="form-group">
+                    <button type="submit" className="btn btn-primary form-control">AddToDo</button>
+                </div>
+            </form>
+        </div>
+    )
 }

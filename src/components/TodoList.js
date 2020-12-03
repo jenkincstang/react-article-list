@@ -1,21 +1,19 @@
-import React ,{Component} from "react";
+import React ,{useEffect, useState} from "react";
 import AddToDo from "./AddToDo";
 import axios from "axios"
 import ToDoItem from "./ToDoItem";
 import { v4 as uuidv4 } from 'uuid';
 
-export default class TodoList extends Component{
-    state = {
-        todos:[]
+export default function TodoList(){
+    const [todos,setTodos] = useState([]);
+    const deleteTodo = (todo) => {
+        const filteredTodos = todos.filter(item => item.id !== todo.id);
+        setTodos(
+            filteredTodos
+        )
     };
-    deleteTodo = (todo) => {
-        const filteredTodos = this.state.todos.filter(item => item.id !== todo.id);
-        this.setState({
-            todos:filteredTodos
-        })
-    };
-    editTodo = (todo) => {
-        const mapedTodos = this.state.todos.map(item => {
+    const editTodo = (todo) => {
+        const mapedTodos = todos.map(item => {
             if(item.id === todo.id){
                 return {
                     ...item,
@@ -25,46 +23,44 @@ export default class TodoList extends Component{
                 return item
             }
         });
-        this.setState({
-            todos:mapedTodos
-        })
-    }
-    addTodo = (todo) =>{
-        this.setState({
-            todos:[...this.state.todos,todo]
-        })
-    }
-    componentDidMount(){
-        axios.get(`https://jsonplaceholder.typicode.com/todos`).then(response =>{
-            const todos = response.data;
-            this.setState({todos});
-        })
-    }
-    render(){
-        return(
-            <div>
-                <AddToDo addToDo={this.addTodo}></AddToDo>
-                <h1>To Do List</h1>
-                <table className="table">
-                    <thead>
-                        <tr>
-                            <th>Id</th>
-                            <th>Title</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {
-                            this.state.todos.map(todo => {
-                                return (
-                                    <ToDoItem key={uuidv4()} deleteTodo={this.deleteTodo} editTodo={this.editTodo} todo={todo}></ToDoItem>
-                                )
-                            })
-                        }
-                    </tbody>
-                </table>
-            </div>
+        setTodos(
+            mapedTodos
         )
     }
+    const addTodo = (todo) =>{
+        setTodos(
+            [...todos,todo]
+        )
+    }
+    useEffect(()=>{
+        axios.get(`https://jsonplaceholder.typicode.com/todos`).then(response =>{
+            const todos = response.data;
+            setTodos(todos);
+        })
+    },[])
+    return(
+        <div>
+            <AddToDo addToDo={addTodo}></AddToDo>
+            <h1>To Do List</h1>
+            <table className="table">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Title</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {
+                        todos.map(todo => {
+                            return (
+                                <ToDoItem key={uuidv4()} deleteTodo={deleteTodo} editTodo={editTodo} todo={todo}></ToDoItem>
+                            )
+                        })
+                    }
+                </tbody>
+            </table>
+        </div>
+    )
 }
